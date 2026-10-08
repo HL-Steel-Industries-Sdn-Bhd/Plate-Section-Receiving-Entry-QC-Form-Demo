@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Receiving Entry & QC</title>
+  <title>Material QC & Entry Form</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { box-sizing: border-box; }
 
     /* ============================================================
-       THEME VARIABLES — switch by body[data-theme]
+       THEME VARIABLES
        ============================================================ */
     :root,
     body[data-theme="plate"] {
@@ -23,7 +23,6 @@
       --theme-badge-bg:      #2e4a6b;
       --theme-accent:        #2c7be5;
     }
-
     body[data-theme="section"] {
       --theme-primary:       #e8871e;
       --theme-primary-dark:  #b8640e;
@@ -62,7 +61,7 @@
       transition: background 0.3s;
     }
     .app-header h1 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 600;
       margin: 0;
       display: flex;
@@ -94,12 +93,10 @@
       border: 1px solid #e9edf2;
       transition: border-color 0.3s;
     }
-    body[data-theme="section"] .card-section {
-      border-color: #fdebd0;
-    }
+    body[data-theme="section"] .card-section { border-color: #fdebd0; }
 
     .section-title {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #1e2b3c;
       margin-bottom: 12px;
@@ -110,11 +107,62 @@
     }
     .section-title i {
       color: var(--theme-accent);
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       width: 18px;
       text-align: center;
       transition: color 0.3s;
     }
+
+    /* ---- Subsection (for Storage Location inside Entry) ---- */
+    .sub-section {
+      background: #f9fbfd;
+      border: 1px solid #eef2f6;
+      border-radius: 12px;
+      padding: 12px 10px;
+      margin-top: 6px;
+      transition: background 0.3s, border-color 0.3s, opacity 0.3s;
+    }
+    body[data-theme="section"] .sub-section {
+      background: #fffaf3;
+      border-color: #fdebd0;
+    }
+    .sub-section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #4a5a6e;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sub-section-label i {
+      color: var(--theme-primary);
+      font-size: 0.8rem;
+      transition: color 0.3s;
+    }
+
+    /* Disabled subsection (when QC = Reject) */
+    .sub-section.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(0.6);
+    }
+    .sub-section.disabled .sub-section-label i {
+      color: #a6b5c6;
+    }
+    .sub-section .lock-hint {
+      font-size: 0.68rem;
+      color: #d64a5a;
+      font-weight: 600;
+      margin-top: 6px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+    .sub-section.disabled .lock-hint {
+      display: flex;
+    }
+
     .form-label {
       font-size: 0.72rem;
       font-weight: 600;
@@ -242,18 +290,18 @@
     }
     .dim-inline-row .unit { font-size: 0.65rem; color: #8a9bb0; min-width: 14px; text-align: center; }
 
-    /* ---- Issue checkboxes ---- */
+    /* ---- Defection checkboxes ---- */
     .issue-grid {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
     }
     .issue-item {
-      flex: 1 0 28%;
+      flex: 1 0 22%;
       background: #f9fbfd;
       border: 1.5px solid #eef2f6;
       border-radius: 12px;
-      padding: 10px 6px;
+      padding: 10px 4px;
       text-align: center;
       transition: 0.15s, background 0.3s, border-color 0.3s;
       cursor: pointer;
@@ -269,7 +317,7 @@
     }
     .issue-item i { font-size: 1.1rem; display: block; margin-bottom: 3px; color: #6b7b8f; transition: color 0.3s; }
     .issue-item.active i { color: var(--theme-primary); }
-    .issue-item span { font-size: 0.7rem; font-weight: 600; color: #4a5a6e; }
+    .issue-item span { font-size: 0.68rem; font-weight: 600; color: #4a5a6e; }
     .issue-item.active span { color: #1e2b3c; }
 
     /* ---- Photo dual buttons ---- */
@@ -304,6 +352,123 @@
       border: 1px solid #dbe1e9;
       object-fit: cover;
     }
+
+    /* ============================================================
+       QC DECISION (3 options: Accept / Concession / Reject)
+       ============================================================ */
+    .qc-decision-row {
+      display: flex;
+      gap: 8px;
+    }
+    .qc-decision-box {
+      flex: 1;
+      border: 2px solid #dbe1e9;
+      border-radius: 14px;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: #6b7b8f;
+      background: #fafbfc;
+      transition: 0.15s, background 0.3s, border-color 0.3s, color 0.3s;
+      text-align: center;
+      line-height: 1.25;
+    }
+    .qc-decision-box .icon-wrap {
+      font-size: 1.3rem;
+      line-height: 1;
+      transition: 0.15s;
+    }
+    /* Accept active */
+    .qc-decision-box.accept-active {
+      border-color: #1a9e6b;
+      background: #e8f9f1;
+      color: #1a9e6b;
+    }
+    .qc-decision-box.accept-active .icon-wrap { color: #1a9e6b; }
+    /* Concession active */
+    .qc-decision-box.concession-active {
+      border-color: #e8a020;
+      background: #fff8e8;
+      color: #b8770a;
+    }
+    .qc-decision-box.concession-active .icon-wrap { color: #e8a020; }
+    /* Reject active */
+    .qc-decision-box.reject-active {
+      border-color: #d64a5a;
+      background: #fdecef;
+      color: #d64a5a;
+    }
+    .qc-decision-box.reject-active .icon-wrap { color: #d64a5a; }
+
+    /* Inform purchaser button */
+    .inform-btn-wrap {
+      margin-top: 10px;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, margin 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    .inform-btn-wrap.visible {
+      max-height: 80px;
+      opacity: 1;
+    }
+    .btn-inform {
+      width: 100%;
+      background: #d64a5a;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 11px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-inform:active { background: #b93b4a; transform: scale(0.98); }
+    .btn-inform i { font-size: 1rem; }
+
+    /* ============================================================
+       HTML NOTIFICATION
+       ============================================================ */
+    .html-toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-120%);
+      background: #2e3b4e;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 90vw;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+    .html-toast.show {
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+    .html-toast i { font-size: 1.2rem; flex-shrink: 0; }
+    .html-toast.toast-warning i { color: #ffb95e; }
+    .html-toast.toast-success i { color: #1cc88a; }
+    .html-toast.toast-error i { color: #ff6b7a; }
 
     /* ---- DUAL LOG BUTTONS ---- */
     .log-toggle-group {
@@ -364,9 +529,7 @@
       color: #2e3b4e;
       line-height: 1.35;
     }
-    body[data-theme="section"] .log-entry {
-      border-bottom-color: #fdebd0;
-    }
+    body[data-theme="section"] .log-entry { border-bottom-color: #fdebd0; }
     .log-entry:last-child { border-bottom: none; }
     .log-entry .log-time { color: #8a9bb0; font-size: 0.6rem; width: 100%; }
     .log-entry .log-spec {
@@ -377,6 +540,7 @@
     }
     .log-entry .log-qc { font-weight: 600; font-size: 0.65rem; }
     .log-entry .log-qc.accepted { color: #1a9e6b; }
+    .log-entry .log-qc.concession { color: #b8770a; }
     .log-entry .log-qc.rejected { color: #d64a5a; }
     .log-entry .log-qc.pending { color: #d99a2b; }
 
@@ -390,9 +554,7 @@
       box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
       z-index: 200;
     }
-    body[data-theme="section"] .bottom-bar {
-      border-top-color: #fdebd0;
-    }
+    body[data-theme="section"] .bottom-bar { border-top-color: #fdebd0; }
     .btn-submit {
       background: var(--theme-header-bg);
       color: white;
@@ -416,36 +578,41 @@
     /* ---- Tiny helpers ---- */
     .row-tight { --bs-gutter-x: 0.4rem; --bs-gutter-y: 0.4rem; }
 
-    /* Remove number input spinners */
     input[type=number]::-webkit-outer-spin-button,
     input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 
-    /* Responsive tweaks */
     @media (max-width: 360px) {
       .form-control, .form-select { font-size: 0.72rem; padding: 6px 5px; }
       .qc-measure-row .form-control { font-size: 0.7rem; padding: 4px 2px; }
       .dim-inline-row .form-control { font-size: 0.7rem; padding: 4px 2px; }
-      .issue-item span { font-size: 0.62rem; }
+      .issue-item span { font-size: 0.6rem; }
       .type-toggle button { font-size: 0.65rem; padding: 3px 10px; }
+      .qc-decision-box { font-size: 0.68rem; padding: 8px 4px; }
+      .qc-decision-box .icon-wrap { font-size: 1.1rem; }
     }
   </style>
 </head>
 <body data-theme="plate">
 
+  <!-- ===== HTML TOAST NOTIFICATION ===== -->
+  <div id="htmlToast" class="html-toast toast-warning">
+    <i class="fas fa-exclamation-circle"></i>
+    <span id="htmlToastMessage">Message</span>
+  </div>
+
   <!-- ===== HEADER ===== -->
   <header class="app-header">
-    <h1><i class="fas fa-clipboard-check"></i>Receiving QC</h1>
+    <h1><i class="fas fa-clipboard-check"></i>Material QC & Entry Form</h1>
     <div class="storekeeper-badge">
       <i class="fas fa-user-check"></i>
       <span id="storeKeeperName">Apple</span>
     </div>
   </header>
 
-  <!-- ===== MAIN FORM ===== -->
   <form id="receivingForm" autocomplete="off">
 
-    <!-- ===== 1. BASIC INFO ===== -->
+    <!-- ===== BIG SECTION 1: BASIC INFO ===== -->
     <div class="card-section">
       <div class="section-title">
         <i class="fas fa-info-circle"></i>Basic Info
@@ -472,7 +639,7 @@
       </div>
     </div>
 
-    <!-- ===== 2. SPECIFICATION (Plate / Section) ===== -->
+    <!-- ===== BIG SECTION 2: SPECIFICATION ===== -->
     <div class="card-section">
       <div class="section-title">
         <i class="fas fa-cube"></i>
@@ -483,7 +650,7 @@
         </div>
       </div>
 
-      <!-- ===== PLATE FIELDS ===== -->
+      <!-- PLATE FIELDS -->
       <div id="plateFields">
         <div class="row row-tight">
           <div class="col-3">
@@ -533,7 +700,7 @@
         </div>
       </div>
 
-      <!-- ===== SECTION FIELDS ===== -->
+      <!-- SECTION FIELDS -->
       <div id="sectionFields" style="display:none;">
         <div class="row row-tight">
           <div class="col-2">
@@ -590,13 +757,13 @@
       </div>
     </div>
 
-    <!-- ===== 3. QC INSPECTION ===== -->
+    <!-- ===== BIG SECTION 3: QC INSPECTION ===== -->
     <div class="card-section">
       <div class="section-title">
         <i class="fas fa-clipboard-list"></i>QC Inspection
       </div>
 
-      <!-- ===== PLATE QC ===== -->
+      <!-- PLATE QC -->
       <div id="plateQC">
         <label class="form-label required-field">Thickness (3 pcs)</label>
         <div class="qc-measure-row">
@@ -631,10 +798,10 @@
           <input type="number" step="1" class="form-control" id="p_wid3" placeholder="W">
         </div>
 
-        <label class="form-label required-field mt-2">Overall condition</label>
+        <label class="form-label mt-2">Defection</label>
         <div class="issue-grid" id="plateIssues">
-          <div class="issue-item" data-issue="scratch" role="button" tabindex="0">
-            <i class="fas fa-pen"></i><span>Scratch</span>
+          <div class="issue-item" data-issue="scratches" role="button" tabindex="0">
+            <i class="fas fa-pen"></i><span>Scratches</span>
           </div>
           <div class="issue-item" data-issue="rust" role="button" tabindex="0">
             <i class="fas fa-water"></i><span>Rust</span>
@@ -642,10 +809,13 @@
           <div class="issue-item" data-issue="bend" role="button" tabindex="0">
             <i class="fas fa-arrows-alt-v"></i><span>Bend</span>
           </div>
+          <div class="issue-item" data-issue="dent" role="button" tabindex="0">
+            <i class="fas fa-circle"></i><span>Dent</span>
+          </div>
         </div>
       </div>
 
-      <!-- ===== SECTION QC ===== -->
+      <!-- SECTION QC -->
       <div id="sectionQC" style="display:none;">
         <label class="form-label required-field">Wall thickness (3 pcs)</label>
         <div class="qc-measure-row">
@@ -693,16 +863,19 @@
           <span class="unit">mm</span>
         </div>
 
-        <label class="form-label required-field mt-2">Overall condition</label>
+        <label class="form-label mt-2">Defection</label>
         <div class="issue-grid" id="sectionIssues">
+          <div class="issue-item" data-issue="scratches" role="button" tabindex="0">
+            <i class="fas fa-pen"></i><span>Scratches</span>
+          </div>
           <div class="issue-item" data-issue="rust" role="button" tabindex="0">
             <i class="fas fa-water"></i><span>Rust</span>
           </div>
-          <div class="issue-item" data-issue="dent" role="button" tabindex="0">
-            <i class="fas fa-circle"></i><span>Dent</span>
-          </div>
           <div class="issue-item" data-issue="bend" role="button" tabindex="0">
             <i class="fas fa-arrows-alt-v"></i><span>Bend</span>
+          </div>
+          <div class="issue-item" data-issue="dent" role="button" tabindex="0">
+            <i class="fas fa-circle"></i><span>Dent</span>
           </div>
         </div>
       </div>
@@ -724,23 +897,59 @@
         <label class="form-label">Remarks</label>
         <textarea class="form-control" id="qcRemarks" rows="2" placeholder="Optional remarks..."></textarea>
       </div>
+
+      <!-- ===== QC DECISION (inside QC big section) ===== -->
+      <div class="mt-3">
+        <div class="sub-section-label">
+          <i class="fas fa-gavel"></i>QC Decision
+        </div>
+        <div class="qc-decision-row">
+          <div class="qc-decision-box" id="acceptBox" role="button" tabindex="0">
+            <span class="icon-wrap">✓</span> QC Accept
+          </div>
+          <div class="qc-decision-box" id="concessionBox" role="button" tabindex="0">
+            <span class="icon-wrap">⚠</span> Concession
+          </div>
+          <div class="qc-decision-box" id="rejectBox" role="button" tabindex="0">
+            <span class="icon-wrap">✕</span> QC Reject
+          </div>
+        </div>
+
+        <!-- Inform Purchaser (only shown when Reject is selected) -->
+        <div class="inform-btn-wrap" id="informWrap">
+          <button type="button" class="btn-inform" id="informBtn">
+            <i class="fab fa-telegram-plane"></i> Inform Purchaser through Telegram
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- ===== 4. LOCATION ===== -->
+    <!-- ===== BIG SECTION 4: ENTRY ===== -->
     <div class="card-section">
       <div class="section-title">
-        <i class="fas fa-warehouse"></i>Storage Location
+        <i class="fas fa-warehouse"></i>Entry
       </div>
-      <div>
-        <label class="form-label required-field">Location</label>
-        <select class="form-select" id="location" required>
-          <option value="" selected disabled>Select location</option>
-          <option value="Warehouse A">Warehouse A</option>
-          <option value="Warehouse B">Warehouse B</option>
-          <option value="Warehouse C">Warehouse C</option>
-          <option value="Warehouse D">Warehouse D</option>
-          <option value="Yard">Yard</option>
-        </select>
+
+      <!-- Storage Location (sub-section, disabled unless Accept or Concession) -->
+      <div class="sub-section disabled" id="storageSection">
+        <div class="sub-section-label">
+          <i class="fas fa-map-marker-alt"></i>Storage Location
+        </div>
+        <div>
+          <label class="form-label required-field">Location</label>
+          <select class="form-select" id="location" disabled>
+            <option value="" selected disabled>Select location</option>
+            <option value="Warehouse A">Warehouse A</option>
+            <option value="Warehouse B">Warehouse B</option>
+            <option value="Warehouse C">Warehouse C</option>
+            <option value="Warehouse D">Warehouse D</option>
+            <option value="Yard">Yard</option>
+          </select>
+        </div>
+        <div class="lock-hint">
+          <i class="fas fa-lock"></i>
+          Storage entry is disabled because QC is Rejected. The material will not be stored.
+        </div>
       </div>
     </div>
 
@@ -776,7 +985,7 @@
   <!-- ===== FIXED BOTTOM SUBMIT ===== -->
   <div class="bottom-bar">
     <button type="submit" form="receivingForm" class="btn-submit" id="submitBtn">
-      <i class="fas fa-paper-plane"></i> Submit Receiving Entry
+      <i class="fas fa-paper-plane"></i> Submit Entry
     </button>
     <div id="submitMessage" class="mt-1" style="font-size:0.75rem;"></div>
   </div>
@@ -785,6 +994,20 @@
   <script>
     (function() {
       'use strict';
+
+      // ========== 0. Custom HTML Toast ==========
+      const toast = document.getElementById('htmlToast');
+      const toastMsg = document.getElementById('htmlToastMessage');
+      let toastTimer = null;
+
+      function showToast(message, type = 'warning', duration = 3500) {
+        clearTimeout(toastTimer);
+        toastMsg.textContent = message;
+        toast.className = 'html-toast show toast-' + type;
+        toastTimer = setTimeout(() => {
+          toast.classList.remove('show');
+        }, duration);
+      }
 
       // ========== 1. Store keeper ==========
       const params = new URLSearchParams(window.location.search);
@@ -797,14 +1020,14 @@
         { time: '2025-03-28 08:45', spec: 'SS304 / 2B / 1250x2500 / 3.0', qc: 'Accepted' },
         { time: '2025-03-27 16:30', spec: 'A572 / HR / 1500x3000 / 8.0', qc: 'Rejected' },
         { time: '2025-03-27 14:20', spec: 'A36 / CR / 1000x2000 / 2.0', qc: 'Accepted' },
-        { time: '2025-03-27 11:05', spec: 'SS316 / BA / 1250x2500 / 2.0', qc: 'Pending' },
+        { time: '2025-03-27 11:05', spec: 'SS316 / BA / 1250x2500 / 2.0', qc: 'Concession' },
         { time: '2025-03-27 09:50', spec: 'Q235 / HR / 1500x3000 / 10.0', qc: 'Accepted' },
         { time: '2025-03-26 17:15', spec: 'A36 / HR / 2000x4000 / 12.0', qc: 'Accepted' },
         { time: '2025-03-26 15:40', spec: 'SS304 / No.4 / 1000x2000 / 3.0', qc: 'Rejected' },
         { time: '2025-03-26 13:25', spec: 'A572 / HR / 1250x2500 / 5.0', qc: 'Accepted' },
         { time: '2025-03-26 10:10', spec: 'A36 / HR / 1000x2000 / 5.0', qc: 'Accepted' },
         { time: '2025-03-25 16:55', spec: 'SS304 / 2B / 1500x3000 / 8.0', qc: 'Accepted' },
-        { time: '2025-03-25 14:35', spec: 'Q235 / CR / 1000x2000 / 2.0', qc: 'Pending' },
+        { time: '2025-03-25 14:35', spec: 'Q235 / CR / 1000x2000 / 2.0', qc: 'Concession' },
         { time: '2025-03-25 11:20', spec: 'SS316 / BA / 1250x2500 / 3.0', qc: 'Accepted' },
         { time: '2025-03-25 09:05', spec: 'A36 / HR / 2000x4000 / 10.0', qc: 'Accepted' },
         { time: '2025-03-24 17:30', spec: 'A572 / HR / 1500x3000 / 8.0', qc: 'Rejected' }
@@ -814,8 +1037,10 @@
 
       // ========== 3. Render log entry ==========
       function renderLogEntry(entry) {
-        const qcClass = entry.qc.toLowerCase().includes('accept') ? 'accepted' :
-                        entry.qc.toLowerCase().includes('reject') ? 'rejected' : 'pending';
+        const qcLower = entry.qc.toLowerCase();
+        const qcClass = qcLower.includes('accept') ? 'accepted' :
+                        qcLower.includes('concession') ? 'concession' :
+                        qcLower.includes('reject') ? 'rejected' : 'pending';
         return `
           <div class="log-entry">
             <span class="log-time">${entry.time}</span>
@@ -863,7 +1088,6 @@
         btn.innerHTML = isOpen
           ? '<i class="fas fa-chevron-up"></i> ' + label
           : '<i class="fas fa-chevron-down"></i> ' + label;
-
         if (otherPanel && otherPanel.classList.contains('open')) {
           otherPanel.classList.remove('open');
           otherBtn.classList.add('collapsed');
@@ -877,7 +1101,7 @@
       currentBtn.addEventListener('click', () => togglePanel(currentBtn, currentPanel, systemBtn, systemPanel));
       renderSystemLogs();
 
-      // ========== 5. Plate / Section toggle + theme switch ==========
+      // ========== 5. Plate / Section toggle + theme ==========
       const plateBtn = document.querySelector('#typeToggle button[data-type="plate"]');
       const sectionBtn = document.querySelector('#typeToggle button[data-type="section"]');
       const plateFields = document.getElementById('plateFields');
@@ -890,10 +1114,7 @@
 
       function switchType(type) {
         currentType = type;
-
-        // ---- Theme switch ----
         document.body.dataset.theme = type;
-
         if (type === 'plate') {
           plateBtn.classList.add('active');
           sectionBtn.classList.remove('active');
@@ -916,7 +1137,7 @@
       plateBtn.addEventListener('click', () => switchType('plate'));
       sectionBtn.addEventListener('click', () => switchType('section'));
 
-      // ========== 6. Supplier Other toggle ==========
+      // ========== 6. Supplier Other ==========
       const supplierSelect = document.getElementById('supplier');
       const otherWrap = document.getElementById('otherSupplierWrap');
       const otherInput = document.getElementById('otherSupplier');
@@ -967,14 +1188,80 @@
           };
           reader.readAsDataURL(file);
         }
-        if (files.length > remaining) alert(`Maximum ${MAX_PHOTOS} photos allowed. Added ${toAdd}.`);
+        if (files.length > remaining) showToast(`Maximum ${MAX_PHOTOS} photos allowed. Added ${toAdd}.`, 'warning');
         if (inputEl) inputEl.value = '';
       }
 
       cameraInput.addEventListener('change', function(e) { handleFiles(e.target.files, cameraInput); });
       galleryInput.addEventListener('change', function(e) { handleFiles(e.target.files, galleryInput); });
 
-      // ========== 9. Form submission ==========
+      // ========== 9. QC Decision (Accept / Concession / Reject) ==========
+      const acceptBox = document.getElementById('acceptBox');
+      const concessionBox = document.getElementById('concessionBox');
+      const rejectBox = document.getElementById('rejectBox');
+      const informWrap = document.getElementById('informWrap');
+      const informBtn = document.getElementById('informBtn');
+      const storageSection = document.getElementById('storageSection');
+      const locationSelect = document.getElementById('location');
+
+      let qcDecision = null; // 'accept' | 'concession' | 'reject' | null
+
+      function setDecision(decision) {
+        qcDecision = decision;
+
+        // Toggle active classes
+        acceptBox.classList.toggle('accept-active', decision === 'accept');
+        concessionBox.classList.toggle('concession-active', decision === 'concession');
+        rejectBox.classList.toggle('reject-active', decision === 'reject');
+
+        // Inform button only on reject
+        if (decision === 'reject') {
+          informWrap.classList.add('visible');
+        } else {
+          informWrap.classList.remove('visible');
+        }
+
+        // Enable / disable Storage Location
+        if (decision === 'accept' || decision === 'concession') {
+          storageSection.classList.remove('disabled');
+          locationSelect.disabled = false;
+        } else if (decision === 'reject') {
+          storageSection.classList.add('disabled');
+          locationSelect.disabled = true;
+          locationSelect.value = ''; // clear selection when disabled
+        } else {
+          // no decision yet — keep disabled
+          storageSection.classList.add('disabled');
+          locationSelect.disabled = true;
+          locationSelect.value = '';
+        }
+      }
+
+      acceptBox.addEventListener('click', () => setDecision('accept'));
+      concessionBox.addEventListener('click', () => setDecision('concession'));
+      rejectBox.addEventListener('click', () => setDecision('reject'));
+
+      [acceptBox, concessionBox, rejectBox].forEach(box => {
+        box.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.click();
+          }
+        });
+      });
+
+      // ========== 10. Inform Purchaser ==========
+      informBtn.addEventListener('click', function() {
+        const photoCount = photoPreview.querySelectorAll('.photo-thumb').length;
+        if (photoCount === 0) {
+          showToast('📸 Please attach at least one photo as proof of damage before informing the purchaser.', 'warning', 4500);
+          return;
+        }
+        showToast('✅ Purchaser has been informed via Telegram (simulated). Photos: ' + photoCount, 'success', 3000);
+        console.log('Telegram notification sent. Photos:', photoCount);
+      });
+
+      // ========== 11. Form submission ==========
       const form = document.getElementById('receivingForm');
       const submitBtn = document.getElementById('submitBtn');
       const submitMessage = document.getElementById('submitMessage');
@@ -986,8 +1273,19 @@
         const deliveryNote = document.getElementById('deliveryNote').value.trim();
         const location = document.getElementById('location').value;
 
-        if (!supplier || !deliveryNote || !location) {
-          alert('Please fill in all required fields.');
+        if (!supplier || !deliveryNote) {
+          showToast('Please fill in all required fields.', 'warning');
+          return;
+        }
+
+        if (!qcDecision) {
+          showToast('Please select QC Accept, Concession, or QC Reject.', 'warning');
+          return;
+        }
+
+        // If decision is accept or concession, location is required
+        if ((qcDecision === 'accept' || qcDecision === 'concession') && !location) {
+          showToast('Please select a Storage Location.', 'warning');
           return;
         }
 
@@ -1012,7 +1310,7 @@
 
           if (!grade || !surface || !dimension || !thickness ||
               !thk1 || !thk2 || !thk3 || !len1 || !wid1 || !len2 || !wid2 || !len3 || !wid3) {
-            alert('Please fill in all required Plate fields.');
+            showToast('Please fill in all required Plate fields.', 'warning');
             return;
           }
 
@@ -1055,7 +1353,7 @@
               !wt1 || !wt2 || !wt3 ||
               !cs_l1 || !cs_w1 || !cs_l2 || !cs_w2 || !cs_l3 || !cs_w3 ||
               !len1 || !len2 || !len3) {
-            alert('Please fill in all required Section fields.');
+            showToast('Please fill in all required Section fields.', 'warning');
             return;
           }
 
@@ -1081,9 +1379,10 @@
         payload.storeKeeper = storeKeeper;
         payload.supplier = supplier;
         payload.deliveryNote = deliveryNote;
-        payload.location = location;
+        payload.location = (qcDecision === 'reject') ? null : location;
         payload.photoCount = photoPreview.querySelectorAll('.photo-thumb').length;
         payload.qcRemarks = document.getElementById('qcRemarks').value.trim();
+        payload.qcDecision = qcDecision;
 
         console.log('📦 Data to write:', payload);
 
@@ -1093,9 +1392,10 @@
 
         setTimeout(() => {
           submitBtn.disabled = false;
-          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Receiving Entry';
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Entry';
 
-          const qcStatus = payload.issues.length > 0 ? 'Rejected' : 'Accepted';
+          const qcStatus = qcDecision === 'accept' ? 'Accepted' :
+                           qcDecision === 'concession' ? 'Concession' : 'Rejected';
           const now = new Date();
           const timeStr = now.toLocaleString('en-GB', { hour12: false }).replace(',', '');
 
@@ -1119,8 +1419,8 @@
         }, 600);
       });
 
-      // ========== 10. Misc ==========
-      document.querySelectorAll('button, .issue-item').forEach(el => {
+      // ========== 12. Misc ==========
+      document.querySelectorAll('button, .issue-item, .qc-decision-box').forEach(el => {
         el.addEventListener('touchstart', function(){}, { passive: true });
       });
 
