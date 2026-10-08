@@ -4,22 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>Receiving Entry & QC</title>
-  <!-- Bootstrap 5 + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { box-sizing: border-box; }
+
+    /* ============================================================
+       THEME VARIABLES — switch by body[data-theme]
+       ============================================================ */
+    :root,
+    body[data-theme="plate"] {
+      --theme-primary:       #2c7be5;
+      --theme-primary-dark:  #1a5bbf;
+      --theme-primary-light: #edf4ff;
+      --theme-primary-soft:  #e6ecf3;
+      --theme-header-bg:     #1e2b3c;
+      --theme-header-accent: #7cc4ff;
+      --theme-badge-bg:      #2e4a6b;
+      --theme-accent:        #2c7be5;
+    }
+
+    body[data-theme="section"] {
+      --theme-primary:       #e8871e;
+      --theme-primary-dark:  #b8640e;
+      --theme-primary-light: #fff4e5;
+      --theme-primary-soft:  #fdebd0;
+      --theme-header-bg:     #3a2410;
+      --theme-header-accent: #ffb95e;
+      --theme-badge-bg:      #5a3a18;
+      --theme-accent:        #e8871e;
+    }
+
+    /* ============================================================
+       BASE
+       ============================================================ */
     body {
       background: #f2f4f8;
       font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
       padding: 0 0 100px 0;
       margin: 0;
       -webkit-tap-highlight-color: transparent;
+      transition: background 0.3s;
     }
 
     /* ---- Header ---- */
     .app-header {
-      background: #1e2b3c;
+      background: var(--theme-header-bg);
       color: white;
       padding: 10px 14px;
       display: flex;
@@ -29,6 +59,7 @@
       top: 0;
       z-index: 100;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: background 0.3s;
     }
     .app-header h1 {
       font-size: 1rem;
@@ -38,9 +69,9 @@
       align-items: center;
       gap: 6px;
     }
-    .app-header h1 i { font-size: 1.1rem; color: #7cc4ff; }
+    .app-header h1 i { font-size: 1.1rem; color: var(--theme-header-accent); transition: color 0.3s; }
     .storekeeper-badge {
-      background: #2e4a6b;
+      background: var(--theme-badge-bg);
       padding: 5px 12px;
       border-radius: 40px;
       font-size: 0.78rem;
@@ -49,8 +80,9 @@
       align-items: center;
       gap: 5px;
       white-space: nowrap;
+      transition: background 0.3s;
     }
-    .storekeeper-badge i { color: #7cc4ff; font-size: 0.8rem; }
+    .storekeeper-badge i { color: var(--theme-header-accent); font-size: 0.8rem; transition: color 0.3s; }
 
     /* ---- Card base ---- */
     .card-section {
@@ -60,7 +92,12 @@
       padding: 14px 12px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.04);
       border: 1px solid #e9edf2;
+      transition: border-color 0.3s;
     }
+    body[data-theme="section"] .card-section {
+      border-color: #fdebd0;
+    }
+
     .section-title {
       font-size: 0.85rem;
       font-weight: 700;
@@ -72,10 +109,11 @@
       letter-spacing: 0.2px;
     }
     .section-title i {
-      color: #2c7be5;
+      color: var(--theme-accent);
       font-size: 0.9rem;
       width: 18px;
       text-align: center;
+      transition: color 0.3s;
     }
     .form-label {
       font-size: 0.72rem;
@@ -89,11 +127,11 @@
       padding: 8px 10px;
       font-size: 0.82rem;
       background: #fafbfc;
-      transition: 0.15s;
+      transition: 0.15s, border-color 0.3s;
     }
     .form-control:focus, .form-select:focus {
-      border-color: #2c7be5;
-      box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.12);
+      border-color: var(--theme-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 18%, transparent);
       background: white;
     }
     .form-control::placeholder { color: #a6b5c6; font-size: 0.78rem; }
@@ -102,11 +140,12 @@
     /* ---- Toggle Plate/Section ---- */
     .type-toggle {
       display: inline-flex;
-      background: #eef2f6;
+      background: var(--theme-primary-soft);
       border-radius: 30px;
       padding: 3px;
       border: 1px solid #dbe1e9;
       margin-left: auto;
+      transition: background 0.3s, border-color 0.3s;
     }
     .type-toggle button {
       border: none;
@@ -121,12 +160,12 @@
       line-height: 1.4;
     }
     .type-toggle button.active {
-      background: #2c7be5;
+      background: var(--theme-primary);
       color: white;
-      box-shadow: 0 2px 6px rgba(44,123,229,0.3);
+      box-shadow: 0 2px 6px color-mix(in srgb, var(--theme-primary) 40%, transparent);
     }
 
-    /* ---- Compact QC measurement rows ---- */
+    /* ---- QC measurement rows ---- */
     .qc-measure-row {
       display: flex;
       align-items: center;
@@ -136,16 +175,22 @@
       padding: 6px 8px;
       border-radius: 12px;
       border: 1px solid #eef2f6;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body[data-theme="section"] .qc-measure-row {
+      background: #fffaf3;
+      border-color: #fdebd0;
     }
     .qc-measure-row .label-pcs {
       font-size: 0.68rem;
       font-weight: 600;
       color: #6b7b8f;
       min-width: 36px;
-      background: #e6ecf3;
+      background: var(--theme-primary-soft);
       padding: 2px 6px;
       border-radius: 30px;
       text-align: center;
+      transition: background 0.3s;
     }
     .qc-measure-row .form-control {
       padding: 6px 6px;
@@ -168,16 +213,22 @@
       padding: 6px 8px;
       border-radius: 12px;
       border: 1px solid #eef2f6;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    body[data-theme="section"] .dim-inline-row {
+      background: #fffaf3;
+      border-color: #fdebd0;
     }
     .dim-inline-row .label-pcs {
       font-size: 0.68rem;
       font-weight: 600;
       color: #6b7b8f;
       min-width: 36px;
-      background: #e6ecf3;
+      background: var(--theme-primary-soft);
       padding: 2px 6px;
       border-radius: 30px;
       text-align: center;
+      transition: background 0.3s;
     }
     .dim-inline-row .form-control {
       padding: 6px 4px;
@@ -204,13 +255,20 @@
       border-radius: 12px;
       padding: 10px 6px;
       text-align: center;
-      transition: 0.15s;
+      transition: 0.15s, background 0.3s, border-color 0.3s;
       cursor: pointer;
       user-select: none;
     }
-    .issue-item.active { border-color: #2c7be5; background: #edf4ff; }
-    .issue-item i { font-size: 1.1rem; display: block; margin-bottom: 3px; color: #6b7b8f; }
-    .issue-item.active i { color: #2c7be5; }
+    body[data-theme="section"] .issue-item {
+      background: #fffaf3;
+      border-color: #fdebd0;
+    }
+    .issue-item.active {
+      border-color: var(--theme-primary);
+      background: var(--theme-primary-light);
+    }
+    .issue-item i { font-size: 1.1rem; display: block; margin-bottom: 3px; color: #6b7b8f; transition: color 0.3s; }
+    .issue-item.active i { color: var(--theme-primary); }
     .issue-item span { font-size: 0.7rem; font-weight: 600; color: #4a5a6e; }
     .issue-item.active span { color: #1e2b3c; }
 
@@ -222,8 +280,8 @@
     }
     .photo-btn {
       flex: 1;
-      background: #eef2f6;
-      border: 1.5px dashed #b6c7da;
+      background: var(--theme-primary-soft);
+      border: 1.5px dashed color-mix(in srgb, var(--theme-primary) 40%, #b6c7da);
       border-radius: 12px;
       padding: 10px;
       display: flex;
@@ -233,11 +291,11 @@
       color: #4a5a6e;
       font-weight: 500;
       font-size: 0.78rem;
-      transition: 0.15s;
+      transition: 0.15s, background 0.3s, border-color 0.3s;
       cursor: pointer;
     }
-    .photo-btn i { font-size: 0.95rem; color: #2c7be5; }
-    .photo-btn:active { background: #e2e9f2; }
+    .photo-btn i { font-size: 0.95rem; color: var(--theme-primary); transition: color 0.3s; }
+    .photo-btn:active { background: color-mix(in srgb, var(--theme-primary) 15%, white); }
     .photo-preview { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
     .photo-thumb {
       width: 48px; height: 48px;
@@ -261,17 +319,20 @@
       padding: 7px 10px;
       font-size: 0.75rem;
       font-weight: 600;
-      color: #2c7be5;
+      color: var(--theme-primary);
       display: flex;
       align-items: center;
       gap: 5px;
       justify-content: center;
-      transition: 0.15s;
+      transition: 0.15s, color 0.3s, border-color 0.3s;
       cursor: pointer;
     }
-    .log-toggle-btn i { transition: transform 0.2s; font-size: 0.7rem; }
+    .log-toggle-btn i { transition: transform 0.2s, color 0.3s; font-size: 0.7rem; }
     .log-toggle-btn.collapsed i { transform: rotate(-90deg); }
-    .log-toggle-btn.active { background: #edf4ff; border-color: #2c7be5; }
+    .log-toggle-btn.active {
+      background: var(--theme-primary-light);
+      border-color: var(--theme-primary);
+    }
 
     .log-panel {
       max-height: 0;
@@ -281,6 +342,10 @@
       background: #f9fbfd;
       border: 1px solid #eef2f6;
       width: 100%;
+    }
+    body[data-theme="section"] .log-panel {
+      background: #fffaf3;
+      border-color: #fdebd0;
     }
     .log-panel.open {
       max-height: 380px;
@@ -299,11 +364,16 @@
       color: #2e3b4e;
       line-height: 1.35;
     }
+    body[data-theme="section"] .log-entry {
+      border-bottom-color: #fdebd0;
+    }
     .log-entry:last-child { border-bottom: none; }
     .log-entry .log-time { color: #8a9bb0; font-size: 0.6rem; width: 100%; }
     .log-entry .log-spec {
       font-weight: 700; color: #1e2b3c; font-family: monospace;
-      font-size: 0.68rem; background: #e6ecf3; padding: 1px 8px; border-radius: 20px;
+      font-size: 0.68rem; background: var(--theme-primary-soft);
+      padding: 1px 8px; border-radius: 20px;
+      transition: background 0.3s;
     }
     .log-entry .log-qc { font-weight: 600; font-size: 0.65rem; }
     .log-entry .log-qc.accepted { color: #1a9e6b; }
@@ -320,8 +390,11 @@
       box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
       z-index: 200;
     }
+    body[data-theme="section"] .bottom-bar {
+      border-top-color: #fdebd0;
+    }
     .btn-submit {
-      background: #1e2b3c;
+      background: var(--theme-header-bg);
       color: white;
       border: none;
       border-radius: 12px;
@@ -333,16 +406,15 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: 0.15s;
+      transition: 0.15s, background 0.3s;
       letter-spacing: 0.3px;
       cursor: pointer;
     }
-    .btn-submit:active { background: #2c3e50; transform: scale(0.98); }
+    .btn-submit:active { transform: scale(0.98); filter: brightness(1.15); }
     .btn-submit i { font-size: 1rem; }
 
     /* ---- Tiny helpers ---- */
     .row-tight { --bs-gutter-x: 0.4rem; --bs-gutter-y: 0.4rem; }
-    .col-half { flex: 0 0 auto; width: 50%; padding-right: 3px; padding-left: 3px; }
 
     /* Remove number input spinners */
     input[type=number]::-webkit-outer-spin-button,
@@ -359,7 +431,7 @@
     }
   </style>
 </head>
-<body>
+<body data-theme="plate">
 
   <!-- ===== HEADER ===== -->
   <header class="app-header">
@@ -404,8 +476,7 @@
     <div class="card-section">
       <div class="section-title">
         <i class="fas fa-cube"></i>
-        <span id="specTitle">Specification</span>
-        <!-- Type toggle -->
+        <span id="specTitle">Specification (Plate)</span>
         <div class="type-toggle ms-auto" id="typeToggle">
           <button type="button" class="active" data-type="plate">Plate</button>
           <button type="button" data-type="section">Section</button>
@@ -527,7 +598,6 @@
 
       <!-- ===== PLATE QC ===== -->
       <div id="plateQC">
-        <!-- Thickness 3 pcs -->
         <label class="form-label required-field">Thickness (3 pcs)</label>
         <div class="qc-measure-row">
           <span class="label-pcs">Pc1</span>
@@ -541,7 +611,6 @@
           <span class="unit">mm</span>
         </div>
 
-        <!-- Dimension (L x W) 3 pcs -->
         <label class="form-label required-field mt-2">Dimension (3 pcs) — L × W</label>
         <div class="dim-inline-row">
           <span class="label-pcs">Pc1</span>
@@ -562,7 +631,6 @@
           <input type="number" step="1" class="form-control" id="p_wid3" placeholder="W">
         </div>
 
-        <!-- Plate defects -->
         <label class="form-label required-field mt-2">Overall condition</label>
         <div class="issue-grid" id="plateIssues">
           <div class="issue-item" data-issue="scratch" role="button" tabindex="0">
@@ -579,7 +647,6 @@
 
       <!-- ===== SECTION QC ===== -->
       <div id="sectionQC" style="display:none;">
-        <!-- Wall thickness 3 pcs -->
         <label class="form-label required-field">Wall thickness (3 pcs)</label>
         <div class="qc-measure-row">
           <span class="label-pcs">Pc1</span>
@@ -593,7 +660,6 @@
           <span class="unit">mm</span>
         </div>
 
-        <!-- Cross section 3 pcs -->
         <label class="form-label required-field mt-2">Cross section (3 pcs) — L × W</label>
         <div class="dim-inline-row">
           <span class="label-pcs">Pc1</span>
@@ -614,7 +680,6 @@
           <input type="number" step="0.1" class="form-control" id="s_cs_w3" placeholder="W">
         </div>
 
-        <!-- Section length 3 pcs -->
         <label class="form-label required-field mt-2">Length (3 pcs)</label>
         <div class="qc-measure-row">
           <span class="label-pcs">Pc1</span>
@@ -628,7 +693,6 @@
           <span class="unit">mm</span>
         </div>
 
-        <!-- Section defects -->
         <label class="form-label required-field mt-2">Overall condition</label>
         <div class="issue-grid" id="sectionIssues">
           <div class="issue-item" data-issue="rust" role="button" tabindex="0">
@@ -656,7 +720,6 @@
       <input type="file" id="galleryInput" accept="image/*" style="display:none;" multiple>
       <div class="photo-preview" id="photoPreview"></div>
 
-      <!-- QC Remarks -->
       <div class="mt-2">
         <label class="form-label">Remarks</label>
         <textarea class="form-control" id="qcRemarks" rows="2" placeholder="Optional remarks..."></textarea>
@@ -814,7 +877,7 @@
       currentBtn.addEventListener('click', () => togglePanel(currentBtn, currentPanel, systemBtn, systemPanel));
       renderSystemLogs();
 
-      // ========== 5. Plate / Section toggle ==========
+      // ========== 5. Plate / Section toggle + theme switch ==========
       const plateBtn = document.querySelector('#typeToggle button[data-type="plate"]');
       const sectionBtn = document.querySelector('#typeToggle button[data-type="section"]');
       const plateFields = document.getElementById('plateFields');
@@ -827,6 +890,10 @@
 
       function switchType(type) {
         currentType = type;
+
+        // ---- Theme switch ----
+        document.body.dataset.theme = type;
+
         if (type === 'plate') {
           plateBtn.classList.add('active');
           sectionBtn.classList.remove('active');
@@ -863,7 +930,7 @@
         }
       });
 
-      // ========== 7. Issue checkboxes (both plates and sections) ==========
+      // ========== 7. Issue checkboxes ==========
       document.querySelectorAll('.issue-item').forEach(item => {
         item.addEventListener('click', function() { this.classList.toggle('active'); });
         item.addEventListener('keydown', function(e) {
@@ -871,7 +938,7 @@
         });
       });
 
-      // ========== 8. Photo capture (Camera + Gallery) ==========
+      // ========== 8. Photo capture ==========
       const cameraBtn = document.getElementById('cameraBtn');
       const galleryBtn = document.getElementById('galleryBtn');
       const cameraInput = document.getElementById('cameraInput');
@@ -1020,7 +1087,6 @@
 
         console.log('📦 Data to write:', payload);
 
-        // Simulate save
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         submitMessage.innerHTML = '';
