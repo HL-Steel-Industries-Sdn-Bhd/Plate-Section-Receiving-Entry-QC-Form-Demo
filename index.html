@@ -113,7 +113,7 @@
       transition: color 0.3s;
     }
 
-    /* ---- Subsection (for Storage Location inside Entry) ---- */
+    /* ---- Subsection ---- */
     .sub-section {
       background: #f9fbfd;
       border: 1px solid #eef2f6;
@@ -141,15 +141,12 @@
       transition: color 0.3s;
     }
 
-    /* Disabled subsection (when QC = Reject) */
     .sub-section.disabled {
       opacity: 0.4;
       pointer-events: none;
       filter: grayscale(0.6);
     }
-    .sub-section.disabled .sub-section-label i {
-      color: #a6b5c6;
-    }
+    .sub-section.disabled .sub-section-label i { color: #a6b5c6; }
     .sub-section .lock-hint {
       font-size: 0.68rem;
       color: #d64a5a;
@@ -159,9 +156,7 @@
       align-items: center;
       gap: 5px;
     }
-    .sub-section.disabled .lock-hint {
-      display: flex;
-    }
+    .sub-section.disabled .lock-hint { display: flex; }
 
     .form-label {
       font-size: 0.72rem;
@@ -354,7 +349,7 @@
     }
 
     /* ============================================================
-       QC DECISION (3 options: Accept / Concession / Reject)
+       QC DECISION
        ============================================================ */
     .qc-decision-row {
       display: flex;
@@ -376,7 +371,7 @@
       font-size: 0.78rem;
       color: #6b7b8f;
       background: #fafbfc;
-      transition: 0.15s, background 0.3s, border-color 0.3s, color 0.3s;
+      transition: 0.15s, background 0.3s, border-color 0.3s, color 0.3s, opacity 0.3s;
       text-align: center;
       line-height: 1.25;
     }
@@ -385,27 +380,41 @@
       line-height: 1;
       transition: 0.15s;
     }
-    /* Accept active */
     .qc-decision-box.accept-active {
       border-color: #1a9e6b;
       background: #e8f9f1;
       color: #1a9e6b;
     }
     .qc-decision-box.accept-active .icon-wrap { color: #1a9e6b; }
-    /* Concession active */
     .qc-decision-box.concession-active {
       border-color: #e8a020;
       background: #fff8e8;
       color: #b8770a;
     }
     .qc-decision-box.concession-active .icon-wrap { color: #e8a020; }
-    /* Reject active */
     .qc-decision-box.reject-active {
       border-color: #d64a5a;
       background: #fdecef;
       color: #d64a5a;
     }
     .qc-decision-box.reject-active .icon-wrap { color: #d64a5a; }
+
+    /* Disabled QC option */
+    .qc-decision-box.option-disabled {
+      opacity: 0.35;
+      pointer-events: none;
+      filter: grayscale(0.8);
+    }
+    /* Small hint under decision row */
+    .decision-hint {
+      font-size: 0.65rem;
+      color: #d64a5a;
+      margin-top: 6px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .decision-hint.visible { display: flex; }
 
     /* Inform purchaser button */
     .inform-btn-wrap {
@@ -629,7 +638,7 @@
           </select>
         </div>
         <div class="col-6">
-          <label class="form-label required-field">Delivery Order</label>
+          <label class="form-label required-field">Supplier Delivery Order</label>
           <input type="text" class="form-control" id="deliveryNote" placeholder="e.g. DN-2025-001" required>
         </div>
       </div>
@@ -700,10 +709,11 @@
         </div>
       </div>
 
-      <!-- SECTION FIELDS -->
+      <!-- SECTION FIELDS (2 rows) -->
       <div id="sectionFields" style="display:none;">
+        <!-- Row 1: Shape / Grade / Surface -->
         <div class="row row-tight">
-          <div class="col-2">
+          <div class="col-4">
             <label class="form-label required-field">Shape</label>
             <select class="form-select" id="s_shape">
               <option value="" selected disabled>—</option>
@@ -715,7 +725,7 @@
               <option value="I-Beam">I-Beam</option>
             </select>
           </div>
-          <div class="col-2">
+          <div class="col-4">
             <label class="form-label required-field">Grade</label>
             <select class="form-select" id="s_grade">
               <option value="" selected disabled>—</option>
@@ -726,7 +736,7 @@
               <option value="Q235">Q235</option>
             </select>
           </div>
-          <div class="col-2">
+          <div class="col-4">
             <label class="form-label required-field">Surface</label>
             <select class="form-select" id="s_surface">
               <option value="" selected disabled>—</option>
@@ -737,11 +747,19 @@
               <option value="No.4">No.4</option>
             </select>
           </div>
-          <div class="col-3">
-            <label class="form-label required-field">Cross Section</label>
-            <input type="text" class="form-control" id="s_cross" placeholder='e.g. 1.5" x 1.2"'>
+        </div>
+
+        <!-- Row 2: Cross Section Dimension (2 cols) + Thickness (1 col) -->
+        <div class="row row-tight mt-1">
+          <div class="col-8">
+            <label class="form-label required-field">Cross Section Dimension</label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="number" step="0.1" class="form-control" id="s_cross_l" placeholder="L" style="flex:1;">
+              <span class="unit" style="font-size:0.8rem; color:#6b7b8f; font-weight:700;">×</span>
+              <input type="number" step="0.1" class="form-control" id="s_cross_w" placeholder="W" style="flex:1;">
+            </div>
           </div>
-          <div class="col-3">
+          <div class="col-4">
             <label class="form-label required-field">Thickness</label>
             <select class="form-select" id="s_thickness">
               <option value="" selected disabled>—</option>
@@ -898,7 +916,7 @@
         <textarea class="form-control" id="qcRemarks" rows="2" placeholder="Optional remarks..."></textarea>
       </div>
 
-      <!-- ===== QC DECISION (inside QC big section) ===== -->
+      <!-- QC DECISION -->
       <div class="mt-3">
         <div class="sub-section-label">
           <i class="fas fa-gavel"></i>QC Decision
@@ -913,6 +931,12 @@
           <div class="qc-decision-box" id="rejectBox" role="button" tabindex="0">
             <span class="icon-wrap">✕</span> QC Reject
           </div>
+        </div>
+
+        <!-- Hint: defect selected -> accept disabled -->
+        <div class="decision-hint" id="decisionHint">
+          <i class="fas fa-info-circle"></i>
+          Defection selected — QC Accept is not allowed. Please use Concession or Reject.
         </div>
 
         <!-- Inform Purchaser (only shown when Reject is selected) -->
@@ -930,7 +954,6 @@
         <i class="fas fa-warehouse"></i>Entry
       </div>
 
-      <!-- Storage Location (sub-section, disabled unless Accept or Concession) -->
       <div class="sub-section disabled" id="storageSection">
         <div class="sub-section-label">
           <i class="fas fa-map-marker-alt"></i>Storage Location
@@ -1132,6 +1155,8 @@
           sectionQC.style.display = 'block';
           specTitle.textContent = 'Specification (Section)';
         }
+        // Re-evaluate defection -> accept state after switching
+        refreshAcceptAvailability();
       }
 
       plateBtn.addEventListener('click', () => switchType('plate'));
@@ -1151,11 +1176,18 @@
         }
       });
 
-      // ========== 7. Issue checkboxes ==========
+      // ========== 7. Issue checkboxes (Defection) ==========
       document.querySelectorAll('.issue-item').forEach(item => {
-        item.addEventListener('click', function() { this.classList.toggle('active'); });
+        item.addEventListener('click', function() {
+          this.classList.toggle('active');
+          refreshAcceptAvailability();
+        });
         item.addEventListener('keydown', function(e) {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.classList.toggle('active'); }
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.classList.toggle('active');
+            refreshAcceptAvailability();
+          }
         });
       });
 
@@ -1195,7 +1227,7 @@
       cameraInput.addEventListener('change', function(e) { handleFiles(e.target.files, cameraInput); });
       galleryInput.addEventListener('change', function(e) { handleFiles(e.target.files, galleryInput); });
 
-      // ========== 9. QC Decision (Accept / Concession / Reject) ==========
+      // ========== 9. QC Decision + Defection gating ==========
       const acceptBox = document.getElementById('acceptBox');
       const concessionBox = document.getElementById('concessionBox');
       const rejectBox = document.getElementById('rejectBox');
@@ -1203,34 +1235,65 @@
       const informBtn = document.getElementById('informBtn');
       const storageSection = document.getElementById('storageSection');
       const locationSelect = document.getElementById('location');
+      const decisionHint = document.getElementById('decisionHint');
 
-      let qcDecision = null; // 'accept' | 'concession' | 'reject' | null
+      let qcDecision = null;
+
+      // Get active defection count for the current type
+      function getActiveDefectionCount() {
+        const selector = currentType === 'plate' ? '#plateIssues .issue-item.active' : '#sectionIssues .issue-item.active';
+        return document.querySelectorAll(selector).length;
+      }
+
+      // Enable/disable Accept based on defection
+      function refreshAcceptAvailability() {
+        const defectCount = getActiveDefectionCount();
+        if (defectCount > 0) {
+          acceptBox.classList.add('option-disabled');
+          decisionHint.classList.add('visible');
+          // If Accept was already selected, force-clear it
+          if (qcDecision === 'accept') {
+            qcDecision = null;
+            acceptBox.classList.remove('accept-active');
+            // Reset storage + inform state
+            storageSection.classList.add('disabled');
+            locationSelect.disabled = true;
+            locationSelect.value = '';
+            informWrap.classList.remove('visible');
+          }
+        } else {
+          acceptBox.classList.remove('option-disabled');
+          decisionHint.classList.remove('visible');
+        }
+      }
 
       function setDecision(decision) {
+        // Block accept if defection exists
+        if (decision === 'accept' && getActiveDefectionCount() > 0) {
+          showToast('Defection is selected — QC Accept is not allowed. Use Concession or Reject.', 'warning', 3500);
+          return;
+        }
+
         qcDecision = decision;
 
-        // Toggle active classes
         acceptBox.classList.toggle('accept-active', decision === 'accept');
         concessionBox.classList.toggle('concession-active', decision === 'concession');
         rejectBox.classList.toggle('reject-active', decision === 'reject');
 
-        // Inform button only on reject
         if (decision === 'reject') {
           informWrap.classList.add('visible');
         } else {
           informWrap.classList.remove('visible');
         }
 
-        // Enable / disable Storage Location
         if (decision === 'accept' || decision === 'concession') {
           storageSection.classList.remove('disabled');
           locationSelect.disabled = false;
         } else if (decision === 'reject') {
           storageSection.classList.add('disabled');
           locationSelect.disabled = true;
-          locationSelect.value = ''; // clear selection when disabled
+          locationSelect.value = '';
         } else {
-          // no decision yet — keep disabled
           storageSection.classList.add('disabled');
           locationSelect.disabled = true;
           locationSelect.value = '';
@@ -1245,10 +1308,17 @@
         box.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            this.click();
+            if (!this.classList.contains('option-disabled')) {
+              this.click();
+            } else {
+              showToast('Defection is selected — QC Accept is not allowed. Use Concession or Reject.', 'warning', 3500);
+            }
           }
         });
       });
+
+      // Initial check
+      refreshAcceptAvailability();
 
       // ========== 10. Inform Purchaser ==========
       informBtn.addEventListener('click', function() {
@@ -1283,7 +1353,6 @@
           return;
         }
 
-        // If decision is accept or concession, location is required
         if ((qcDecision === 'accept' || qcDecision === 'concession') && !location) {
           showToast('Please select a Storage Location.', 'warning');
           return;
@@ -1333,7 +1402,9 @@
           const shape = document.getElementById('s_shape').value;
           const grade = document.getElementById('s_grade').value;
           const surface = document.getElementById('s_surface').value;
-          const cross = document.getElementById('s_cross').value.trim();
+          const crossL = document.getElementById('s_cross_l').value.trim();
+          const crossW = document.getElementById('s_cross_w').value.trim();
+          const cross = (crossL && crossW) ? `${crossL} x ${crossW}` : '';
           const thickness = document.getElementById('s_thickness').value;
 
           const wt1 = document.getElementById('s_wt1').value;
@@ -1349,7 +1420,7 @@
           const len2 = document.getElementById('s_len2').value;
           const len3 = document.getElementById('s_len3').value;
 
-          if (!shape || !grade || !surface || !cross || !thickness ||
+          if (!shape || !grade || !surface || !crossL || !crossW || !thickness ||
               !wt1 || !wt2 || !wt3 ||
               !cs_l1 || !cs_w1 || !cs_l2 || !cs_w2 || !cs_l3 || !cs_w3 ||
               !len1 || !len2 || !len3) {
@@ -1363,7 +1434,9 @@
           specStr = `${shape} / ${grade} / ${surface} / ${cross} / ${thickness}`;
           payload = {
             type: 'section',
-            shape, grade, surface, crossSection: cross, thickness,
+            shape, grade, surface,
+            crossSection: { length: crossL, width: crossW },
+            thickness,
             wallThicknessMeasurements: [wt1, wt2, wt3],
             crossSectionMeasurements: [
               { length: cs_l1, width: cs_w1 },
