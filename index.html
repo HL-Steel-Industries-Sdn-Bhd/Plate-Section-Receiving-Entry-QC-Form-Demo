@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Receiving Entry & QC</title>
+  <!-- Bootstrap 5 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #f2f4f8;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      padding: 0 0 100px 0;
+      margin: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---- Header ---- */
+    .app-header {
+      background: #1e2b3c;
+      color: white;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .app-header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .app-header h1 i { font-size: 1.1rem; color: #7cc4ff; }
+    .storekeeper-badge {
+      background: #2e4a6b;
+      padding: 5px 12px;
+      border-radius: 40px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .storekeeper-badge i { color: #7cc4ff; font-size: 0.8rem; }
+
+    /* ---- Card base ---- */
+    .card-section {
+      background: white;
+      border-radius: 16px;
+      margin: 10px 10px 0 10px;
+      padding: 14px 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      border: 1px solid #e9edf2;
+    }
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e2b3c;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.2px;
+    }
+    .section-title i {
+      color: #2c7be5;
+      font-size: 0.9rem;
+      width: 18px;
+      text-align: center;
+    }
+    .form-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #4a5a6e;
+      margin-bottom: 3px;
+    }
+    .form-control, .form-select {
+      border-radius: 10px;
+      border: 1.5px solid #dbe1e9;
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      background: #fafbfc;
+      transition: 0.15s;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #2c7be5;
+      box-shadow: 0 0 0 3px rgba(44, 123, 229, 0.12);
+      background: white;
+    }
+    .form-control::placeholder { color: #a6b5c6; font-size: 0.78rem; }
+    .required-field::after { content: " *"; color: #e04f5f; font-weight: 700; }
+
+    /* ---- Toggle Plate/Section ---- */
+    .type-toggle {
+      display: inline-flex;
+      background: #eef2f6;
+      border-radius: 30px;
+      padding: 3px;
+      border: 1px solid #dbe1e9;
+      margin-left: auto;
+    }
+    .type-toggle button {
+      border: none;
+      background: transparent;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #6b7b8f;
+      padding: 4px 14px;
+      border-radius: 30px;
+      transition: 0.2s;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+    .type-toggle button.active {
+      background: #2c7be5;
+      color: white;
+      box-shadow: 0 2px 6px rgba(44,123,229,0.3);
+    }
+
+    /* ---- Compact QC measurement rows ---- */
+    .qc-measure-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 6px;
+      background: #f9fbfd;
+      padding: 6px 8px;
+      border-radius: 12px;
+      border: 1px solid #eef2f6;
+    }
+    .qc-measure-row .label-pcs {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #6b7b8f;
+      min-width: 36px;
+      background: #e6ecf3;
+      padding: 2px 6px;
+      border-radius: 30px;
+      text-align: center;
+    }
+    .qc-measure-row .form-control {
+      padding: 6px 6px;
+      font-size: 0.78rem;
+      border-radius: 8px;
+      background: white;
+      border: 1.5px solid #dbe1e9;
+      text-align: center;
+      min-width: 0;
+    }
+    .qc-measure-row .unit { font-size: 0.65rem; color: #8a9bb0; min-width: 18px; text-align: center; }
+
+    /* ---- Inline dimension row ---- */
+    .dim-inline-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      background: #f9fbfd;
+      padding: 6px 8px;
+      border-radius: 12px;
+      border: 1px solid #eef2f6;
+    }
+    .dim-inline-row .label-pcs {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: #6b7b8f;
+      min-width: 36px;
+      background: #e6ecf3;
+      padding: 2px 6px;
+      border-radius: 30px;
+      text-align: center;
+    }
+    .dim-inline-row .form-control {
+      padding: 6px 4px;
+      font-size: 0.78rem;
+      border-radius: 8px;
+      background: white;
+      border: 1.5px solid #dbe1e9;
+      text-align: center;
+      min-width: 0;
+      flex: 1;
+    }
+    .dim-inline-row .unit { font-size: 0.65rem; color: #8a9bb0; min-width: 14px; text-align: center; }
+
+    /* ---- Issue checkboxes ---- */
+    .issue-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .issue-item {
+      flex: 1 0 28%;
+      background: #f9fbfd;
+      border: 1.5px solid #eef2f6;
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      transition: 0.15s;
+      cursor: pointer;
+      user-select: none;
+    }
+    .issue-item.active { border-color: #2c7be5; background: #edf4ff; }
+    .issue-item i { font-size: 1.1rem; display: block; margin-bottom: 3px; color: #6b7b8f; }
+    .issue-item.active i { color: #2c7be5; }
+    .issue-item span { font-size: 0.7rem; font-weight: 600; color: #4a5a6e; }
+    .issue-item.active span { color: #1e2b3c; }
+
+    /* ---- Photo dual buttons ---- */
+    .photo-btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .photo-btn {
+      flex: 1;
+      background: #eef2f6;
+      border: 1.5px dashed #b6c7da;
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: #4a5a6e;
+      font-weight: 500;
+      font-size: 0.78rem;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+    .photo-btn i { font-size: 0.95rem; color: #2c7be5; }
+    .photo-btn:active { background: #e2e9f2; }
+    .photo-preview { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+    .photo-thumb {
+      width: 48px; height: 48px;
+      border-radius: 8px;
+      background: #eef2f6;
+      border: 1px solid #dbe1e9;
+      object-fit: cover;
+    }
+
+    /* ---- DUAL LOG BUTTONS ---- */
+    .log-toggle-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .log-toggle-btn {
+      flex: 1;
+      background: white;
+      border: 1.5px solid #dbe1e9;
+      border-radius: 40px;
+      padding: 7px 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #2c7be5;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      justify-content: center;
+      transition: 0.15s;
+      cursor: pointer;
+    }
+    .log-toggle-btn i { transition: transform 0.2s; font-size: 0.7rem; }
+    .log-toggle-btn.collapsed i { transform: rotate(-90deg); }
+    .log-toggle-btn.active { background: #edf4ff; border-color: #2c7be5; }
+
+    .log-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+      border-radius: 12px;
+      background: #f9fbfd;
+      border: 1px solid #eef2f6;
+      width: 100%;
+    }
+    .log-panel.open {
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 6px 4px 6px 6px;
+      margin-top: 6px;
+      border: 1px solid #dbe1e9;
+    }
+    .log-entry {
+      font-size: 0.68rem;
+      padding: 8px 8px;
+      border-bottom: 1px solid #e9edf2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px 10px;
+      color: #2e3b4e;
+      line-height: 1.35;
+    }
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry .log-time { color: #8a9bb0; font-size: 0.6rem; width: 100%; }
+    .log-entry .log-spec {
+      font-weight: 700; color: #1e2b3c; font-family: monospace;
+      font-size: 0.68rem; background: #e6ecf3; padding: 1px 8px; border-radius: 20px;
+    }
+    .log-entry .log-qc { font-weight: 600; font-size: 0.65rem; }
+    .log-entry .log-qc.accepted { color: #1a9e6b; }
+    .log-entry .log-qc.rejected { color: #d64a5a; }
+    .log-entry .log-qc.pending { color: #d99a2b; }
+
+    /* ---- Fixed bottom bar ---- */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: white;
+      padding: 10px 14px 14px 14px;
+      border-top: 1px solid #e9edf2;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.04);
+      z-index: 200;
+    }
+    .btn-submit {
+      background: #1e2b3c;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.15s;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+    }
+    .btn-submit:active { background: #2c3e50; transform: scale(0.98); }
+    .btn-submit i { font-size: 1rem; }
+
+    /* ---- Tiny helpers ---- */
+    .row-tight { --bs-gutter-x: 0.4rem; --bs-gutter-y: 0.4rem; }
+    .col-half { flex: 0 0 auto; width: 50%; padding-right: 3px; padding-left: 3px; }
+
+    /* Remove number input spinners */
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+    /* Responsive tweaks */
+    @media (max-width: 360px) {
+      .form-control, .form-select { font-size: 0.72rem; padding: 6px 5px; }
+      .qc-measure-row .form-control { font-size: 0.7rem; padding: 4px 2px; }
+      .dim-inline-row .form-control { font-size: 0.7rem; padding: 4px 2px; }
+      .issue-item span { font-size: 0.62rem; }
+      .type-toggle button { font-size: 0.65rem; padding: 3px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <h1><i class="fas fa-clipboard-check"></i>Receiving QC</h1>
+    <div class="storekeeper-badge">
+      <i class="fas fa-user-check"></i>
+      <span id="storeKeeperName">Apple</span>
+    </div>
+  </header>
+
+  <!-- ===== MAIN FORM ===== -->
+  <form id="receivingForm" autocomplete="off">
+
+    <!-- ===== 1. BASIC INFO ===== -->
+    <div class="card-section">
+      <div class="section-title">
+        <i class="fas fa-info-circle"></i>Basic Info
+      </div>
+      <div class="row row-tight">
+        <div class="col-6">
+          <label class="form-label required-field">Supplier</label>
+          <select class="form-select" id="supplier" required>
+            <option value="" selected disabled>Select</option>
+            <option value="MetalCorp">MetalCorp</option>
+            <option value="SteelInc">SteelInc</option>
+            <option value="InoxPlus">InoxPlus</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="col-6">
+          <label class="form-label required-field">Delivery Order</label>
+          <input type="text" class="form-control" id="deliveryNote" placeholder="e.g. DN-2025-001" required>
+        </div>
+      </div>
+      <div class="mt-2" id="otherSupplierWrap" style="display:none;">
+        <label class="form-label">Other supplier name</label>
+        <input type="text" class="form-control" id="otherSupplier" placeholder="Enter supplier name">
+      </div>
+    </div>
+
+    <!-- ===== 2. SPECIFICATION (Plate / Section) ===== -->
+    <div class="card-section">
+      <div class="section-title">
+        <i class="fas fa-cube"></i>
+        <span id="specTitle">Specification</span>
+        <!-- Type toggle -->
+        <div class="type-toggle ms-auto" id="typeToggle">
+          <button type="button" class="active" data-type="plate">Plate</button>
+          <button type="button" data-type="section">Section</button>
+        </div>
+      </div>
+
+      <!-- ===== PLATE FIELDS ===== -->
+      <div id="plateFields">
+        <div class="row row-tight">
+          <div class="col-3">
+            <label class="form-label required-field">Grade</label>
+            <select class="form-select" id="p_grade">
+              <option value="" selected disabled>—</option>
+              <option value="A36">A36</option>
+              <option value="SS304">SS304</option>
+              <option value="SS316">SS316</option>
+              <option value="A572">A572</option>
+              <option value="Q235">Q235</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="form-label required-field">Surface</label>
+            <select class="form-select" id="p_surface">
+              <option value="" selected disabled>—</option>
+              <option value="HR">HR</option>
+              <option value="CR">CR</option>
+              <option value="2B">2B</option>
+              <option value="BA">BA</option>
+              <option value="No.4">No.4</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="form-label required-field">Dimension</label>
+            <select class="form-select" id="p_dimension">
+              <option value="" selected disabled>—</option>
+              <option value="1000x2000">1000x2000</option>
+              <option value="1250x2500">1250x2500</option>
+              <option value="1500x3000">1500x3000</option>
+              <option value="2000x4000">2000x4000</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="form-label required-field">Thickness</label>
+            <select class="form-select" id="p_thickness">
+              <option value="" selected disabled>—</option>
+              <option value="2.0">2.0</option>
+              <option value="3.0">3.0</option>
+              <option value="5.0">5.0</option>
+              <option value="8.0">8.0</option>
+              <option value="10.0">10.0</option>
+              <option value="12.0">12.0</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION FIELDS ===== -->
+      <div id="sectionFields" style="display:none;">
+        <div class="row row-tight">
+          <div class="col-2">
+            <label class="form-label required-field">Shape</label>
+            <select class="form-select" id="s_shape">
+              <option value="" selected disabled>—</option>
+              <option value="SHS">SHS</option>
+              <option value="RHS">RHS</option>
+              <option value="CHS">CHS</option>
+              <option value="Angle">Angle</option>
+              <option value="Channel">Channel</option>
+              <option value="I-Beam">I-Beam</option>
+            </select>
+          </div>
+          <div class="col-2">
+            <label class="form-label required-field">Grade</label>
+            <select class="form-select" id="s_grade">
+              <option value="" selected disabled>—</option>
+              <option value="A36">A36</option>
+              <option value="SS304">SS304</option>
+              <option value="SS316">SS316</option>
+              <option value="A572">A572</option>
+              <option value="Q235">Q235</option>
+            </select>
+          </div>
+          <div class="col-2">
+            <label class="form-label required-field">Surface</label>
+            <select class="form-select" id="s_surface">
+              <option value="" selected disabled>—</option>
+              <option value="HR">HR</option>
+              <option value="CR">CR</option>
+              <option value="2B">2B</option>
+              <option value="BA">BA</option>
+              <option value="No.4">No.4</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label class="form-label required-field">Cross Section</label>
+            <input type="text" class="form-control" id="s_cross" placeholder='e.g. 1.5" x 1.2"'>
+          </div>
+          <div class="col-3">
+            <label class="form-label required-field">Thickness</label>
+            <select class="form-select" id="s_thickness">
+              <option value="" selected disabled>—</option>
+              <option value="1.5">1.5</option>
+              <option value="2.0">2.0</option>
+              <option value="2.5">2.5</option>
+              <option value="3.0">3.0</option>
+              <option value="4.0">4.0</option>
+              <option value="5.0">5.0</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 3. QC INSPECTION ===== -->
+    <div class="card-section">
+      <div class="section-title">
+        <i class="fas fa-clipboard-list"></i>QC Inspection
+      </div>
+
+      <!-- ===== PLATE QC ===== -->
+      <div id="plateQC">
+        <!-- Thickness 3 pcs -->
+        <label class="form-label required-field">Thickness (3 pcs)</label>
+        <div class="qc-measure-row">
+          <span class="label-pcs">Pc1</span>
+          <input type="number" step="0.01" class="form-control" id="p_thk1" placeholder="0.00">
+          <span class="unit">mm</span>
+          <span class="label-pcs">Pc2</span>
+          <input type="number" step="0.01" class="form-control" id="p_thk2" placeholder="0.00">
+          <span class="unit">mm</span>
+          <span class="label-pcs">Pc3</span>
+          <input type="number" step="0.01" class="form-control" id="p_thk3" placeholder="0.00">
+          <span class="unit">mm</span>
+        </div>
+
+        <!-- Dimension (L x W) 3 pcs -->
+        <label class="form-label required-field mt-2">Dimension (3 pcs) — L × W</label>
+        <div class="dim-inline-row">
+          <span class="label-pcs">Pc1</span>
+          <input type="number" step="1" class="form-control" id="p_len1" placeholder="L">
+          <span class="unit">×</span>
+          <input type="number" step="1" class="form-control" id="p_wid1" placeholder="W">
+        </div>
+        <div class="dim-inline-row">
+          <span class="label-pcs">Pc2</span>
+          <input type="number" step="1" class="form-control" id="p_len2" placeholder="L">
+          <span class="unit">×</span>
+          <input type="number" step="1" class="form-control" id="p_wid2" placeholder="W">
+        </div>
+        <div class="dim-inline-row">
+          <span class="label-pcs">Pc3</span>
+          <input type="number" step="1" class="form-control" id="p_len3" placeholder="L">
+          <span class="unit">×</span>
+          <input type="number" step="1" class="form-control" id="p_wid3" placeholder="W">
+        </div>
+
+        <!-- Plate defects -->
+        <label class="form-label required-field mt-2">Overall condition</label>
+        <div class="issue-grid" id="plateIssues">
+          <div class="issue-item" data-issue="scratch" role="button" tabindex="0">
+            <i class="fas fa-pen"></i><span>Scratch</span>
+          </div>
+          <div class="issue-item" data-issue="rust" role="button" tabindex="0">
+            <i class="fas fa-water"></i><span>Rust</span>
+          </div>
+          <div class="issue-item" data-issue="bend" role="button" tabindex="0">
+            <i class="fas fa-arrows-alt-v"></i><span>Bend</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== SECTION QC ===== -->
+      <div id="sectionQC" style="display:none;">
+        <!-- Wall thickness 3 pcs -->
+        <label class="form-label required-field">Wall thickness (3 pcs)</label>
+        <div class="qc-measure-row">
+          <span class="label-pcs">Pc1</span>
+          <input type="number" step="0.01" class="form-control" id="s_wt1" placeholder="0.00">
+          <span class="unit">mm</span>
+          <span class="label-pcs">Pc2</span>
+          <input type="number" step="0.01" class="form-control" id="s_wt2" placeholder="0.00">
+          <span class="unit">mm</span>
+          <span class="label-pcs">Pc3</span>
+          <input type="number" step="0.01" class="form-control" id="s_wt3" placeholder="0.00">
+          <span class="unit">mm</span>
+        </div>
+
+        <!-- Cross section 3 pcs -->
+        <label class="form-label required-field mt-2">Cross section (3 pcs) — L × W</label>
+        <div class="dim-inline-row">
+          <span class="label-pcs">Pc1</span>
+          <input type="number" step="0.1" class="form-control" id="s_cs_l1" placeholder="L">
+          <span class="unit">×</span>
+          <input type="number" step="0.1" class="form-control" id="s_cs_w1" placeholder="W">
+        </div>
+        <div class="dim-inline-row">
+          <span class="label-pcs">Pc2</span>
+          <input type="number" step="0.1" class="form-control" id="s_cs_l2" placeholder="L">
+          <span class="unit">×</span>
+          <input type="number" step="0.1" class="form-control" id="s_cs_w2" placeholder="W">
+        </div>
+        <div class="dim-inline-row">
+          <span class="label-pcs">Pc3</span>
+          <input type="number" step="0.1" class="form-control" id="s_cs_l3" placeholder="L">
+          <span class="unit">×</span>
+          <input type="number" step="0.1" class="form-control" id="s_cs_w3" placeholder="W">
+        </div>
+
+        <!-- Section length 3 pcs -->
+        <label class="form-label required-field mt-2">Length (3 pcs)</label>
+        <div class="qc-measure-row">
+          <span class="label-pcs">Pc1</span>
+          <input type="number" step="1" class="form-control" id="s_len1" placeholder="0">
+          <span class="unit">mm</span>
+          <span class="label-pcs">Pc2</span>
+          <input type="number" step="1" class="form-control" id="s_len2" placeholder="0">
+          <span class="unit">mm</span>
+          <span class="label-pcs">Pc3</span>
+          <input type="number" step="1" class="form-control" id="s_len3" placeholder="0">
+          <span class="unit">mm</span>
+        </div>
+
+        <!-- Section defects -->
+        <label class="form-label required-field mt-2">Overall condition</label>
+        <div class="issue-grid" id="sectionIssues">
+          <div class="issue-item" data-issue="rust" role="button" tabindex="0">
+            <i class="fas fa-water"></i><span>Rust</span>
+          </div>
+          <div class="issue-item" data-issue="dent" role="button" tabindex="0">
+            <i class="fas fa-circle"></i><span>Dent</span>
+          </div>
+          <div class="issue-item" data-issue="bend" role="button" tabindex="0">
+            <i class="fas fa-arrows-alt-v"></i><span>Bend</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shared photo buttons -->
+      <div class="photo-btn-group">
+        <button type="button" class="photo-btn" id="cameraBtn">
+          <i class="fas fa-camera"></i> Camera
+        </button>
+        <button type="button" class="photo-btn" id="galleryBtn">
+          <i class="fas fa-images"></i> Gallery
+        </button>
+      </div>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+      <input type="file" id="galleryInput" accept="image/*" style="display:none;" multiple>
+      <div class="photo-preview" id="photoPreview"></div>
+
+      <!-- QC Remarks -->
+      <div class="mt-2">
+        <label class="form-label">Remarks</label>
+        <textarea class="form-control" id="qcRemarks" rows="2" placeholder="Optional remarks..."></textarea>
+      </div>
+    </div>
+
+    <!-- ===== 4. LOCATION ===== -->
+    <div class="card-section">
+      <div class="section-title">
+        <i class="fas fa-warehouse"></i>Storage Location
+      </div>
+      <div>
+        <label class="form-label required-field">Location</label>
+        <select class="form-select" id="location" required>
+          <option value="" selected disabled>Select location</option>
+          <option value="Warehouse A">Warehouse A</option>
+          <option value="Warehouse B">Warehouse B</option>
+          <option value="Warehouse C">Warehouse C</option>
+          <option value="Warehouse D">Warehouse D</option>
+          <option value="Yard">Yard</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ===== 5. DUAL LOG ===== -->
+    <div class="card-section" style="margin-top: 10px;">
+      <div class="log-toggle-group">
+        <button type="button" class="log-toggle-btn collapsed" id="systemLogBtn">
+          <i class="fas fa-chevron-down"></i> System History
+        </button>
+        <button type="button" class="log-toggle-btn collapsed" id="currentLogBtn">
+          <i class="fas fa-chevron-down"></i> Current Log
+        </button>
+      </div>
+      <div class="log-panel" id="systemLogPanel">
+        <div id="systemLogList">
+          <div class="text-center py-3 text-muted" style="font-size:0.75rem;">
+            <i class="fas fa-spinner fa-spin me-1"></i> Loading...
+          </div>
+        </div>
+      </div>
+      <div class="log-panel" id="currentLogPanel">
+        <div id="currentLogList">
+          <div class="text-center py-3 text-muted" style="font-size:0.75rem;">
+            No submissions in this session yet.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 16px;"></div>
+  </form>
+
+  <!-- ===== FIXED BOTTOM SUBMIT ===== -->
+  <div class="bottom-bar">
+    <button type="submit" form="receivingForm" class="btn-submit" id="submitBtn">
+      <i class="fas fa-paper-plane"></i> Submit Receiving Entry
+    </button>
+    <div id="submitMessage" class="mt-1" style="font-size:0.75rem;"></div>
+  </div>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    (function() {
+      'use strict';
+
+      // ========== 1. Store keeper ==========
+      const params = new URLSearchParams(window.location.search);
+      const storeKeeper = params.get('H') || 'Apple';
+      document.getElementById('storeKeeperName').textContent = storeKeeper;
+
+      // ========== 2. Mock System History ==========
+      const MOCK_SYSTEM_LOGS = [
+        { time: '2025-03-28 09:12', spec: 'A36 / HR / 1000x2000 / 5.0', qc: 'Accepted' },
+        { time: '2025-03-28 08:45', spec: 'SS304 / 2B / 1250x2500 / 3.0', qc: 'Accepted' },
+        { time: '2025-03-27 16:30', spec: 'A572 / HR / 1500x3000 / 8.0', qc: 'Rejected' },
+        { time: '2025-03-27 14:20', spec: 'A36 / CR / 1000x2000 / 2.0', qc: 'Accepted' },
+        { time: '2025-03-27 11:05', spec: 'SS316 / BA / 1250x2500 / 2.0', qc: 'Pending' },
+        { time: '2025-03-27 09:50', spec: 'Q235 / HR / 1500x3000 / 10.0', qc: 'Accepted' },
+        { time: '2025-03-26 17:15', spec: 'A36 / HR / 2000x4000 / 12.0', qc: 'Accepted' },
+        { time: '2025-03-26 15:40', spec: 'SS304 / No.4 / 1000x2000 / 3.0', qc: 'Rejected' },
+        { time: '2025-03-26 13:25', spec: 'A572 / HR / 1250x2500 / 5.0', qc: 'Accepted' },
+        { time: '2025-03-26 10:10', spec: 'A36 / HR / 1000x2000 / 5.0', qc: 'Accepted' },
+        { time: '2025-03-25 16:55', spec: 'SS304 / 2B / 1500x3000 / 8.0', qc: 'Accepted' },
+        { time: '2025-03-25 14:35', spec: 'Q235 / CR / 1000x2000 / 2.0', qc: 'Pending' },
+        { time: '2025-03-25 11:20', spec: 'SS316 / BA / 1250x2500 / 3.0', qc: 'Accepted' },
+        { time: '2025-03-25 09:05', spec: 'A36 / HR / 2000x4000 / 10.0', qc: 'Accepted' },
+        { time: '2025-03-24 17:30', spec: 'A572 / HR / 1500x3000 / 8.0', qc: 'Rejected' }
+      ];
+
+      let currentLogs = [];
+
+      // ========== 3. Render log entry ==========
+      function renderLogEntry(entry) {
+        const qcClass = entry.qc.toLowerCase().includes('accept') ? 'accepted' :
+                        entry.qc.toLowerCase().includes('reject') ? 'rejected' : 'pending';
+        return `
+          <div class="log-entry">
+            <span class="log-time">${entry.time}</span>
+            <span class="log-spec">${entry.spec}</span>
+            <span class="log-qc ${qcClass}">${entry.qc}</span>
+          </div>
+        `;
+      }
+
+      function renderSystemLogs() {
+        const c = document.getElementById('systemLogList');
+        if (!c) return;
+        if (MOCK_SYSTEM_LOGS.length === 0) {
+          c.innerHTML = '<div class="text-center py-3 text-muted" style="font-size:0.75rem;">No system history.</div>';
+          return;
+        }
+        let h = '';
+        MOCK_SYSTEM_LOGS.forEach(e => { h += renderLogEntry(e); });
+        c.innerHTML = h;
+      }
+
+      function renderCurrentLogs() {
+        const c = document.getElementById('currentLogList');
+        if (!c) return;
+        if (currentLogs.length === 0) {
+          c.innerHTML = '<div class="text-center py-3 text-muted" style="font-size:0.75rem;">No submissions in this session yet.</div>';
+          return;
+        }
+        let h = '';
+        [...currentLogs].reverse().forEach(e => { h += renderLogEntry(e); });
+        c.innerHTML = h;
+      }
+
+      // ========== 4. Log toggle ==========
+      const systemBtn = document.getElementById('systemLogBtn');
+      const systemPanel = document.getElementById('systemLogPanel');
+      const currentBtn = document.getElementById('currentLogBtn');
+      const currentPanel = document.getElementById('currentLogPanel');
+
+      function togglePanel(btn, panel, otherBtn, otherPanel) {
+        const isOpen = panel.classList.toggle('open');
+        btn.classList.toggle('collapsed', !isOpen);
+        btn.classList.toggle('active', isOpen);
+        const label = btn.id === 'systemLogBtn' ? 'System History' : 'Current Log';
+        btn.innerHTML = isOpen
+          ? '<i class="fas fa-chevron-up"></i> ' + label
+          : '<i class="fas fa-chevron-down"></i> ' + label;
+
+        if (otherPanel && otherPanel.classList.contains('open')) {
+          otherPanel.classList.remove('open');
+          otherBtn.classList.add('collapsed');
+          otherBtn.classList.remove('active');
+          const otherLabel = otherBtn.id === 'systemLogBtn' ? 'System History' : 'Current Log';
+          otherBtn.innerHTML = '<i class="fas fa-chevron-down"></i> ' + otherLabel;
+        }
+      }
+
+      systemBtn.addEventListener('click', () => togglePanel(systemBtn, systemPanel, currentBtn, currentPanel));
+      currentBtn.addEventListener('click', () => togglePanel(currentBtn, currentPanel, systemBtn, systemPanel));
+      renderSystemLogs();
+
+      // ========== 5. Plate / Section toggle ==========
+      const plateBtn = document.querySelector('#typeToggle button[data-type="plate"]');
+      const sectionBtn = document.querySelector('#typeToggle button[data-type="section"]');
+      const plateFields = document.getElementById('plateFields');
+      const sectionFields = document.getElementById('sectionFields');
+      const plateQC = document.getElementById('plateQC');
+      const sectionQC = document.getElementById('sectionQC');
+      const specTitle = document.getElementById('specTitle');
+
+      let currentType = 'plate';
+
+      function switchType(type) {
+        currentType = type;
+        if (type === 'plate') {
+          plateBtn.classList.add('active');
+          sectionBtn.classList.remove('active');
+          plateFields.style.display = 'block';
+          sectionFields.style.display = 'none';
+          plateQC.style.display = 'block';
+          sectionQC.style.display = 'none';
+          specTitle.textContent = 'Specification (Plate)';
+        } else {
+          sectionBtn.classList.add('active');
+          plateBtn.classList.remove('active');
+          plateFields.style.display = 'none';
+          sectionFields.style.display = 'block';
+          plateQC.style.display = 'none';
+          sectionQC.style.display = 'block';
+          specTitle.textContent = 'Specification (Section)';
+        }
+      }
+
+      plateBtn.addEventListener('click', () => switchType('plate'));
+      sectionBtn.addEventListener('click', () => switchType('section'));
+
+      // ========== 6. Supplier Other toggle ==========
+      const supplierSelect = document.getElementById('supplier');
+      const otherWrap = document.getElementById('otherSupplierWrap');
+      const otherInput = document.getElementById('otherSupplier');
+      supplierSelect.addEventListener('change', function() {
+        if (this.value === 'Other') {
+          otherWrap.style.display = 'block';
+          otherInput.required = true;
+        } else {
+          otherWrap.style.display = 'none';
+          otherInput.required = false;
+        }
+      });
+
+      // ========== 7. Issue checkboxes (both plates and sections) ==========
+      document.querySelectorAll('.issue-item').forEach(item => {
+        item.addEventListener('click', function() { this.classList.toggle('active'); });
+        item.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.classList.toggle('active'); }
+        });
+      });
+
+      // ========== 8. Photo capture (Camera + Gallery) ==========
+      const cameraBtn = document.getElementById('cameraBtn');
+      const galleryBtn = document.getElementById('galleryBtn');
+      const cameraInput = document.getElementById('cameraInput');
+      const galleryInput = document.getElementById('galleryInput');
+      const photoPreview = document.getElementById('photoPreview');
+      const MAX_PHOTOS = 5;
+
+      cameraBtn.addEventListener('click', () => cameraInput.click());
+      galleryBtn.addEventListener('click', () => galleryInput.click());
+
+      function handleFiles(files, inputEl) {
+        if (!files || files.length === 0) return;
+        const currentCount = photoPreview.querySelectorAll('.photo-thumb').length;
+        const remaining = MAX_PHOTOS - currentCount;
+        const toAdd = Math.min(files.length, remaining);
+        for (let i = 0; i < toAdd; i++) {
+          const file = files[i];
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            const img = document.createElement('img');
+            img.src = event.target.result;
+            img.className = 'photo-thumb';
+            img.alt = 'QC photo';
+            img.loading = 'lazy';
+            photoPreview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        }
+        if (files.length > remaining) alert(`Maximum ${MAX_PHOTOS} photos allowed. Added ${toAdd}.`);
+        if (inputEl) inputEl.value = '';
+      }
+
+      cameraInput.addEventListener('change', function(e) { handleFiles(e.target.files, cameraInput); });
+      galleryInput.addEventListener('change', function(e) { handleFiles(e.target.files, galleryInput); });
+
+      // ========== 9. Form submission ==========
+      const form = document.getElementById('receivingForm');
+      const submitBtn = document.getElementById('submitBtn');
+      const submitMessage = document.getElementById('submitMessage');
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const supplier = supplierSelect.value === 'Other' ? otherInput.value.trim() : supplierSelect.value;
+        const deliveryNote = document.getElementById('deliveryNote').value.trim();
+        const location = document.getElementById('location').value;
+
+        if (!supplier || !deliveryNote || !location) {
+          alert('Please fill in all required fields.');
+          return;
+        }
+
+        let specStr = '';
+        let payload = {};
+
+        if (currentType === 'plate') {
+          const grade = document.getElementById('p_grade').value;
+          const surface = document.getElementById('p_surface').value;
+          const dimension = document.getElementById('p_dimension').value;
+          const thickness = document.getElementById('p_thickness').value;
+
+          const thk1 = document.getElementById('p_thk1').value;
+          const thk2 = document.getElementById('p_thk2').value;
+          const thk3 = document.getElementById('p_thk3').value;
+          const len1 = document.getElementById('p_len1').value;
+          const wid1 = document.getElementById('p_wid1').value;
+          const len2 = document.getElementById('p_len2').value;
+          const wid2 = document.getElementById('p_wid2').value;
+          const len3 = document.getElementById('p_len3').value;
+          const wid3 = document.getElementById('p_wid3').value;
+
+          if (!grade || !surface || !dimension || !thickness ||
+              !thk1 || !thk2 || !thk3 || !len1 || !wid1 || !len2 || !wid2 || !len3 || !wid3) {
+            alert('Please fill in all required Plate fields.');
+            return;
+          }
+
+          const issues = [];
+          document.querySelectorAll('#plateIssues .issue-item.active').forEach(el => issues.push(el.dataset.issue));
+
+          specStr = `${grade} / ${surface} / ${dimension} / ${thickness}`;
+          payload = {
+            type: 'plate',
+            grade, surface, dimension, thickness,
+            thicknessMeasurements: [thk1, thk2, thk3],
+            dimensionMeasurements: [
+              { length: len1, width: wid1 },
+              { length: len2, width: wid2 },
+              { length: len3, width: wid3 }
+            ],
+            issues: issues
+          };
+        } else {
+          const shape = document.getElementById('s_shape').value;
+          const grade = document.getElementById('s_grade').value;
+          const surface = document.getElementById('s_surface').value;
+          const cross = document.getElementById('s_cross').value.trim();
+          const thickness = document.getElementById('s_thickness').value;
+
+          const wt1 = document.getElementById('s_wt1').value;
+          const wt2 = document.getElementById('s_wt2').value;
+          const wt3 = document.getElementById('s_wt3').value;
+          const cs_l1 = document.getElementById('s_cs_l1').value;
+          const cs_w1 = document.getElementById('s_cs_w1').value;
+          const cs_l2 = document.getElementById('s_cs_l2').value;
+          const cs_w2 = document.getElementById('s_cs_w2').value;
+          const cs_l3 = document.getElementById('s_cs_l3').value;
+          const cs_w3 = document.getElementById('s_cs_w3').value;
+          const len1 = document.getElementById('s_len1').value;
+          const len2 = document.getElementById('s_len2').value;
+          const len3 = document.getElementById('s_len3').value;
+
+          if (!shape || !grade || !surface || !cross || !thickness ||
+              !wt1 || !wt2 || !wt3 ||
+              !cs_l1 || !cs_w1 || !cs_l2 || !cs_w2 || !cs_l3 || !cs_w3 ||
+              !len1 || !len2 || !len3) {
+            alert('Please fill in all required Section fields.');
+            return;
+          }
+
+          const issues = [];
+          document.querySelectorAll('#sectionIssues .issue-item.active').forEach(el => issues.push(el.dataset.issue));
+
+          specStr = `${shape} / ${grade} / ${surface} / ${cross} / ${thickness}`;
+          payload = {
+            type: 'section',
+            shape, grade, surface, crossSection: cross, thickness,
+            wallThicknessMeasurements: [wt1, wt2, wt3],
+            crossSectionMeasurements: [
+              { length: cs_l1, width: cs_w1 },
+              { length: cs_l2, width: cs_w2 },
+              { length: cs_l3, width: cs_w3 }
+            ],
+            lengthMeasurements: [len1, len2, len3],
+            issues: issues
+          };
+        }
+
+        payload.timestamp = new Date().toISOString();
+        payload.storeKeeper = storeKeeper;
+        payload.supplier = supplier;
+        payload.deliveryNote = deliveryNote;
+        payload.location = location;
+        payload.photoCount = photoPreview.querySelectorAll('.photo-thumb').length;
+        payload.qcRemarks = document.getElementById('qcRemarks').value.trim();
+
+        console.log('📦 Data to write:', payload);
+
+        // Simulate save
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        submitMessage.innerHTML = '';
+
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Receiving Entry';
+
+          const qcStatus = payload.issues.length > 0 ? 'Rejected' : 'Accepted';
+          const now = new Date();
+          const timeStr = now.toLocaleString('en-GB', { hour12: false }).replace(',', '');
+
+          currentLogs.push({
+            time: timeStr,
+            spec: specStr,
+            qc: qcStatus
+          });
+          renderCurrentLogs();
+
+          submitMessage.innerHTML = `
+            <div class="alert alert-success py-1 px-2 mb-0" style="font-size:0.72rem; border-radius:8px;">
+              <i class="fas fa-check-circle me-1"></i>
+              Saved (simulated). ${qcStatus}
+            </div>
+          `;
+
+          setTimeout(() => {
+            if (submitMessage.firstChild) submitMessage.innerHTML = '';
+          }, 4000);
+        }, 600);
+      });
+
+      // ========== 10. Misc ==========
+      document.querySelectorAll('button, .issue-item').forEach(el => {
+        el.addEventListener('touchstart', function(){}, { passive: true });
+      });
+
+    })();
+  </script>
+</body>
+</html>
